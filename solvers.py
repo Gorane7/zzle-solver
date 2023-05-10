@@ -20,11 +20,11 @@ def solve_with_bfs(filename):
         else:
             print(f"ERROR: Tried all possible solutions ({i}), but none worked")
             break
-        success, message = simulator.try_solve({
-            "locations": {key: val for key, val in task_map["locations"].items()},
-            "marks": {x for x in task_map["marks"]},
-            "start pos": task_map["start pos"]
-        }, sol)
+        success, message = simulator.try_solve([
+            {key: val for key, val in task_map[0].items()},
+            {x for x in task_map[1]},
+            task_map[2]
+        ], sol)
         if success:
             print(sol)
             break
@@ -45,11 +45,11 @@ def solve_with_random(filename):
         if i % print_every == 0:
             start = time.time()
         sol = sol_gen.gen_sol(functions)
-        success, message = simulator.try_solve({
-            "locations": {key: val for key, val in task_map["locations"].items()},
-            "marks": {x for x in task_map["marks"]},
-            "start pos": task_map["start pos"]
-        }, sol)
+        success, message = simulator.try_solve([
+            {key: val for key, val in task_map[0].items()},
+            {x for x in task_map[1]},
+            task_map[2]
+        ], sol)
         if success:
             print(sol)
             break

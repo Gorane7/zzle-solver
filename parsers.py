@@ -20,8 +20,8 @@ def textfile_parser(filename):
                     marks.add((x, y))
                 if val[1] == "S":
                     start_pos = (x, y, val[2])
-    return {
-        "locations": locations,
-        "marks": marks,
-        "start pos": start_pos
-    }, functions
+    return [
+        locations,
+        marks,
+        start_pos
+    ], functions

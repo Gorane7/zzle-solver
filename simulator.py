@@ -25,31 +25,36 @@ def try_solve(task, sol):
         "R": "U"
     }
     c = 0
-    while task["marks"]:
+    while True:
         c += 1
         if c > 1000:
             return False, "out of time"
         if not stack:
             return False, "stack empty"
         action, condition = stack.pop()
-        if condition == "A" or task["locations"] == condition:
+        if condition == "A" or task[0] == condition:
             if isinstance(action, int):
                 stack += sol[action][::-1]
             elif action == "M":
-                x, y, dir = task["start pos"]
+                x, y, dir = task[2]
                 dx, dy = dir_map[dir]
-                task["start pos"] = (x + dx, y + dy, dir)
-                if (x + dx, y + dy) not in task["locations"].keys():
+                new_x, new_y = x + dx, y + dy
+                task[2] = (new_x, new_y, dir)
+                if (new_x, new_y) not in task[0].keys():
                     return False, "invalid location"
+                if (new_x, new_y) in task[1]:
+                    task[1].remove((new_x, new_y))
+                    if not task[1]:
+                        break
             elif action == "R":
-                x, y, dir = task["start pos"]
-                task["start pos"] = (x, y, rotate_right_map[dir])
+                x, y, dir = task[2]
+                task[2] = (x, y, rotate_right_map[dir])
             elif action == "L":
-                x, y, dir = task["start pos"]
-                task["start pos"] = (x, y, rotate_left_map[dir])
+                x, y, dir = task[2]
+                task[2] = (x, y, rotate_left_map[dir])
             elif action[0] == "C":
-                x, y, dir = task["start pos"]
-                task["locations"][(x, y)] = action[1]
+                x, y, dir = task[2]
+                task[0][(x, y)] = action[1]
             else:
                 print("ERROR: parser should not reach this statement")
                 exit()
