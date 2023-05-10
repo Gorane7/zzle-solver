@@ -27,9 +27,8 @@ def textfile_parser(filename):
     return {
         "locations": locations,
         "marks": marks,
-        "start pos": start_pos,
-        "functions": functions
-    }
+        "start pos": start_pos
+    }, functions
 
 
 def setup_display(task):
@@ -102,13 +101,13 @@ def render_frame(task, screen):
     pygame.display.update()
 
 
-def gen_sol(task):
+def gen_sol(functions):
     conditionals = ["A", "O", "T", "P"]
     actions = ["M", "R", "L", "CO", "CT", "CP"]
-    for key in task["functions"].keys():
+    for key in functions.keys():
         actions.append(key)
     sol = {}
-    for key, val in task["functions"].items():
+    for key, val in functions.items():
         chosen_len = random.randint(0, val)
         this_func = []
         for i in range(chosen_len):
@@ -117,18 +116,18 @@ def gen_sol(task):
     return sol
 
 
-def gen_empty_sol(task):
-    return {key: [] for key in task["functions"].keys()}
+def gen_empty_sol(functions):
+    return {key: [] for key in functions.keys()}
 
 
-def gen_additional_sols(task, sol):
+def gen_additional_sols(functions, sol):
     conditionals = ["A", "O", "T", "P"]
     actions = ["M", "R", "L", "CO", "CT", "CP"]
     for key in sol.keys():
         actions.append(key)
     new_sols = []    
     for key in sol.keys():
-        if len(sol[key]) == task["functions"][key]:
+        if len(sol[key]) == functions[key]:
             continue
         for conditional in conditionals:
             for action in actions:
@@ -217,11 +216,9 @@ class Deque:
 
 
 def solve_with_bfs(filename):
-    task = textfile_parser(filename)
-    # print(task)
-    # print()
+    task_map, functions = textfile_parser(filename)
     solutions = Deque()
-    solutions.add(gen_empty_sol(task))
+    solutions.add(gen_empty_sol(functions))
     i = 0
     print_every = 10000
     while True:
@@ -232,31 +229,28 @@ def solve_with_bfs(filename):
         else:
             print(f"ERROR: Tried all possible solutions ({i}), but none worked")
             break
-        success, message = try_solve(copy.deepcopy(task), sol)
+        success, message = try_solve(copy.deepcopy(task_map), sol)
         if success:
             print(sol)
             break
-        for new_sol in gen_additional_sols(task, sol):
+        for new_sol in gen_additional_sols(functions, sol):
             solutions.add(new_sol)
         if i % print_every == print_every - 1:
             dur = time.time() - start
             print(f"Checking {print_every} solutions took {dur} seconds, solution stack size: {solutions.size()}")
         i += 1
-    # display(task)
     print(success, message)
 
 
 def solve_with_random(filename):
-    task = textfile_parser(filename)
-    # print(task)
-    # print()
+    task_map, functions = textfile_parser(filename)
     i = 0
     print_every = 10000
     while True:
         if i % print_every == 0:
             start = time.time()
-        sol = gen_sol(task)
-        success, message = try_solve(copy.deepcopy(task), sol)
+        sol = gen_sol(functions)
+        success, message = try_solve(copy.deepcopy(task_map), sol)
         if success:
             print(sol)
             break
@@ -264,7 +258,6 @@ def solve_with_random(filename):
             dur = time.time() - start
             print(f"Checking {print_every} solutions took {dur} seconds")
         i += 1
-    # display(task)
     print(success, message)
 
 
