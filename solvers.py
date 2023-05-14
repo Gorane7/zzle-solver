@@ -13,7 +13,7 @@ def solve_specific(filename, solution):
         {x for x in task_map[1]},
         task_map[2]
     ], solution, True)
-    print(success, message)
+    print([success, message])
 
 
 def solve_with_dfs(filename):
@@ -21,7 +21,31 @@ def solve_with_dfs(filename):
     i = 0
     print_every = 10000
     sol = sol_gen.gen_empty_sol(functions)
-    success, solution = do_dfs(task_map, )
+    success, solution_or_message = do_dfs(task_map, sol, functions)
+    print([success, solution_or_message])
+
+
+def do_dfs(task_map, current_sol, function_sizes):
+    # print(f"Trying: {current_sol}")
+    success, message = simulator.try_solve([
+        {key: val for key, val in task_map[0].items()},
+        {x for x in task_map[1]},
+        task_map[2]
+    ], current_sol, False)
+    if success:
+        return success, current_sol
+    to_mod = min([x for x in function_sizes.keys() if function_sizes[x] > len(current_sol[x])] + [1024])
+    if to_mod == 1024:
+        return False, "Fully mapped functions"
+    action_amount = 6 + len(function_sizes.keys())
+    for conditional in range(4):
+        for action in range(action_amount):
+            current_sol[to_mod].append((action, conditional))
+            success, message_or_sol = do_dfs(task_map, current_sol, function_sizes)
+            if success:
+                return success, message_or_sol
+            current_sol[to_mod].pop()
+    return False, "Iterated through all solutions"
 
 
 def solve_with_bfs(filename):
