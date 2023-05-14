@@ -30,7 +30,7 @@ def solve_specific(filename, solution):
     print([success, message])
 
 
-def solve_with_dfs(filename):
+def solve_with_dfs(filename, illustrate=False):
     start = time.time()
     task_map, functions = parsers.textfile_parser(filename)
     i = 0
@@ -38,11 +38,12 @@ def solve_with_dfs(filename):
     sol = sol_gen.gen_empty_sol(functions)
     success, solution = do_dfs(task_map, sol, functions)
     time_taken = time.time() - start
-    simulator.try_solve([
-        {key: val for key, val in task_map[0].items()},
-        {x for x in task_map[1]},
-        task_map[2]
-    ], sol, True)
+    if illustrate:
+        simulator.try_solve([
+            {key: val for key, val in task_map[0].items()},
+            {x for x in task_map[1]},
+            task_map[2]
+        ], sol, True)
     return success, solution, time_taken
 
 
