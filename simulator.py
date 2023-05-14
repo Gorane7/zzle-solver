@@ -1,29 +1,27 @@
+import time
+
+import display
 
 
-def try_solve(task, sol):
+def try_solve(task, sol, render=False):
     stack = []
     stack += sol[0][::-1]
-    # screen = setup_display(task)
-    # render_frame(task, screen)
-    # time.sleep(0.1)
-    dir_map = {
-        "U": (0, -1),
-        "L": (1, 0),
-        "D": (0, 1),
-        "R": (-1, 0)
-    }
-    rotate_right_map = {
-        "U": "R",
-        "R": "D",
-        "D": "L",
-        "L": "U"
-    }
-    rotate_left_map = {
-        "U": "L",
-        "L": "D",
-        "D": "R",
-        "R": "U"
-    }
+    if render:
+        screen = display.setup_display(task)
+        display.render_frame(task, screen)
+        time.sleep(0.1)
+    dir_map = [
+        (0, -1),
+        (1, 0),
+        (0, 1),
+        (-1, 0)
+    ]
+    # dir_map = {
+    #     "U": (0, -1),
+    #     "R": (1, 0),
+    #     "D": (0, 1),
+    #     "L": (-1, 0)
+    # }
     c = 0
     while True:
         c += 1
@@ -32,11 +30,10 @@ def try_solve(task, sol):
         if not stack:
             return False, "stack empty"
         action, condition = stack.pop()
-        if condition == "A" or task[0] == condition:
-            if isinstance(action, int):
-                stack += sol[action][::-1]
-            elif action == "M":
-                x, y, dir = task[2]
+        x, y, dir = task[2]
+        if condition == 0 or task[0][(x, y)] == condition:
+            # print(f"Executing: {action}, {condition}")
+            if action == 0:
                 dx, dy = dir_map[dir]
                 new_x, new_y = x + dx, y + dy
                 task[2] = (new_x, new_y, dir)
@@ -46,18 +43,15 @@ def try_solve(task, sol):
                     task[1].remove((new_x, new_y))
                     if not task[1]:
                         break
-            elif action == "R":
-                x, y, dir = task[2]
-                task[2] = (x, y, rotate_right_map[dir])
-            elif action == "L":
-                x, y, dir = task[2]
-                task[2] = (x, y, rotate_left_map[dir])
-            elif action[0] == "C":
-                x, y, dir = task[2]
-                task[0][(x, y)] = action[1]
+            elif action == 1:
+                task[2] = (x, y, (dir + 1) % 4)
+            elif action == 2:
+                task[2] = (x, y, (dir - 1) % 4)
+            elif action < 6:
+                task[0][(x, y)] = action - 2
             else:
-                print("ERROR: parser should not reach this statement")
-                exit()
-        # render_frame(task, screen)
-        # time.sleep(0.1)
+                stack += sol[action - 6][::-1]
+        if render:
+            display.render_frame(task, screen)
+            time.sleep(0.1)
     return True, "Success"

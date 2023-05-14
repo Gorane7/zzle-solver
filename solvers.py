@@ -6,6 +6,24 @@ import sol_gen
 import simulator
 
 
+def solve_specific(filename, solution):
+    task_map, functions = parsers.textfile_parser(filename)
+    success, message = simulator.try_solve([
+        {key: val for key, val in task_map[0].items()},
+        {x for x in task_map[1]},
+        task_map[2]
+    ], solution, True)
+    print(success, message)
+
+
+def solve_with_dfs(filename):
+    task_map, functions = parsers.textfile_parser(filename)
+    i = 0
+    print_every = 10000
+    sol = sol_gen.gen_empty_sol(functions)
+    success, solution = do_dfs(task_map, )
+
+
 def solve_with_bfs(filename):
     task_map, functions = parsers.textfile_parser(filename)
     solutions = deque.Deque()
@@ -19,7 +37,7 @@ def solve_with_bfs(filename):
             sol = solutions.get()
         else:
             print(f"ERROR: Tried all possible solutions ({i}), but none worked")
-            break
+            return
         success, message = simulator.try_solve([
             {key: val for key, val in task_map[0].items()},
             {x for x in task_map[1]},
@@ -34,6 +52,11 @@ def solve_with_bfs(filename):
             dur = time.time() - start
             print(f"Checking {print_every} solutions took {dur} seconds, solution stack size: {solutions.size()}")
         i += 1
+    simulator.try_solve([
+        {key: val for key, val in task_map[0].items()},
+        {x for x in task_map[1]},
+        task_map[2]
+    ], sol, True)
     print(success, message)
 
 

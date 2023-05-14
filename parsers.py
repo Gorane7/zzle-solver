@@ -10,16 +10,27 @@ def textfile_parser(filename):
     locations = {}
     marks = set()
     start_pos = None
+    colour_map = {
+        "O": 1,
+        "T": 2,
+        "P": 3
+    }
+    dir_map = {
+        "U": 0,
+        "R": 1,
+        "D": 2,
+        "L": 3
+    }
     for y, line in enumerate(map_lines):
         for x, val in enumerate(line.split("|")):
             if not val:
                 continue
-            locations[(x, y)] = val[0]
+            locations[(x, y)] = colour_map[val[0]]
             if len(val) > 1:
                 if val[1] == "M":
                     marks.add((x, y))
                 if val[1] == "S":
-                    start_pos = (x, y, val[2])
+                    start_pos = (x, y, dir_map[val[2]])
     return [
         locations,
         marks,
