@@ -6,6 +6,20 @@ import sol_gen
 import simulator
 
 
+def timed_comparison(filename):
+    start = time.time()
+    success, message = solve_with_dfs(filename)
+    print(f"DFS took {time.time() - start} seconds and found solution {message}")
+    
+    start = time.time()
+    success, message = solve_with_bfs(filename)
+    print(f"BFS took {time.time() - start} seconds and found solution {message}")
+
+    start = time.time()
+    success, message = solve_with_random(filename)
+    print(f"Random took {time.time() - start} seconds and found solution {message}")
+
+
 def solve_specific(filename, solution):
     task_map, functions = parsers.textfile_parser(filename)
     success, message = simulator.try_solve([
@@ -17,16 +31,22 @@ def solve_specific(filename, solution):
 
 
 def solve_with_dfs(filename):
+    start = time.time()
     task_map, functions = parsers.textfile_parser(filename)
     i = 0
     print_every = 10000
     sol = sol_gen.gen_empty_sol(functions)
-    success, solution_or_message = do_dfs(task_map, sol, functions)
-    print([success, solution_or_message])
+    success, solution = do_dfs(task_map, sol, functions)
+    time_taken = time.time() - start
+    simulator.try_solve([
+        {key: val for key, val in task_map[0].items()},
+        {x for x in task_map[1]},
+        task_map[2]
+    ], sol, True)
+    return success, solution, time_taken
 
 
 def do_dfs(task_map, current_sol, function_sizes):
-    # print(f"Trying: {current_sol}")
     success, message = simulator.try_solve([
         {key: val for key, val in task_map[0].items()},
         {x for x in task_map[1]},
@@ -76,12 +96,12 @@ def solve_with_bfs(filename):
             dur = time.time() - start
             print(f"Checking {print_every} solutions took {dur} seconds, solution stack size: {solutions.size()}")
         i += 1
-    simulator.try_solve([
+    """simulator.try_solve([
         {key: val for key, val in task_map[0].items()},
         {x for x in task_map[1]},
         task_map[2]
-    ], sol, True)
-    print(success, message)
+    ], sol, True)"""
+    return success, message
 
 
 def solve_with_random(filename):
@@ -104,4 +124,4 @@ def solve_with_random(filename):
             dur = time.time() - start
             print(f"Checking {print_every} solutions took {dur} seconds")
         i += 1
-    print(success, message)
+    return success, message
