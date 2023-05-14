@@ -1,0 +1,9 @@
+||||OM
+|P|T|P|T|T|P
+|T||T|T||T
+OM|T|T|T|T|T|P
+|P|T|TSR|T|T|T|OM
+|T||T|T||T
+|P|T|T|P|T|P
+|||OM
+0:5
